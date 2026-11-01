@@ -1,0 +1,95 @@
+Codigo secuencias 
+import time
+from machine import PWM, Pin
+
+# =================================================================
+# CONFIGURACIÓN DE PINES DEL MOTOR DE TRACCIÓN (MOTOR 1)
+# =================================================================
+pwm_ena = PWM(Pin(2))
+pwm_ena.freq(1000)  # Frecuencia recomendada de 1 kHz para motores DC
+
+pin_in1 = Pin(3, Pin.OUT)
+pin_in2 = Pin(4, Pin.OUT)
+
+# =================================================================
+# MAPEADO DE VELOCIDADES EN PWM (Escala nativa MicroPython de 0 a 65535)
+# =================================================================
+# El valor mínimo ronda los 32000 (~500 en escala reducida) para vencer fricción
+VEL_LENTO   = 35000  # Paso 2: Adelante lento
+VEL_MEDIO   = 50000  # Paso 3: Adelante más rápido
+VEL_RAPIDO  = 65535  # Paso 4: Adelante a máxima potencia
+
+def frenar_vehiculo():
+    """Apaga las señales de potencia y dirección del motor trasero."""
+    pwm_ena.duty_u16(0)
+    pin_in1.value(0)
+    pin_in2.value(0)
+
+# =================================================================
+# BUCLE PRINCIPAL DE LA SECUENCIA REPETITIVA
+# =================================================================
+print("=" * 60)
+print("INICIANDO PATRÓN SECUENCIAL AUTOMÁTICO (5 SEGUNDOS POR PASO)")
+print("Asegúrate de encender el interruptor de las baterías AA.")
+print("=" * 60)
+
+try:
+    while True:
+        # ---------------------------------------------------------
+        # ETAPA 1: HACIA ATRÁS (Duración: 5 segundos)
+        # ---------------------------------------------------------
+        print("[CONSOLA THONNY] -> Paso 1: Moviéndose hacia ATRÁS")
+        pin_in1.value(0)
+        pin_in2.value(1)  # Invierte polaridad para retroceso
+        pwm_ena.duty_u16(VEL_MEDIO)
+        time.sleep(5)
+        
+        # ESPERA ENTRE SECUENCIAS: Frena 5 segundos antes del siguiente paso
+        print("[CONSOLA THONNY] -> Espera intermedia: Vehículo Frenado")
+        frenar_vehiculo()
+        time.sleep(5)
+
+        # ---------------------------------------------------------
+        # ETAPA 2: HACIA ADELANTE LENTO (Duración: 5 segundos)
+        # ---------------------------------------------------------
+        print("[CONSOLA THONNY] -> Paso 2: Moviéndose hacia ADELANTE - LENTO")
+        pin_in1.value(1)
+        pin_in2.value(0)  # Polaridad directa para avance
+        pwm_ena.duty_u16(VEL_LENTO)
+        time.sleep(5)
+        
+        print("[CONSOLA THONNY] -> Espera intermedia: Vehículo Frenado")
+        frenar_vehiculo()
+        time.sleep(5)
+
+        # ---------------------------------------------------------
+        # ETAPA 3: HACIA ADELANTE MÁS RÁPIDO (Duración: 5 segundos)
+        # ---------------------------------------------------------
+        print("[CONSOLA THONNY] -> Paso 3: Moviéndose hacia ADELANTE - MÁS RÁPIDO")
+        pin_in1.value(1)
+        pin_in2.value(0)
+        pwm_ena.duty_u16(VEL_MEDIO)
+        time.sleep(5)
+        
+        print("[CONSOLA THONNY] -> Espera intermedia: Vehículo Frenado")
+        frenar_vehiculo()
+        time.sleep(5)
+
+        # ---------------------------------------------------------
+        # ETAPA 4: HACIA ADELANTE AÚN MÁS RÁPIDO (Duración: 5 segundos)
+        # ---------------------------------------------------------
+        print("[CONSOLA THONNY] -> Paso 4: Moviéndose hacia ADELANTE - MÁXIMA POTENCIA")
+        pin_in1.value(1)
+        pin_in2.value(0)
+        pwm_ena.duty_u16(VEL_RAPIDO)
+        time.sleep(5)
+        
+        # ESPERA FINAL ANTES DE REPETIR EL CICLO COMPLETO
+        print("[CONSOLA THONNY] -> Espera de cierre: Reiniciando secuencia en 5 segundos...")
+        frenar_vehiculo()
+        time.sleep(5)
+
+except KeyboardInterrupt:
+    # Freno de seguridad por si detienes el programa manualmente en Thonny
+    frenar_vehiculo()
+    print("\nSecuencia detenida de forma segura por el usuario.")

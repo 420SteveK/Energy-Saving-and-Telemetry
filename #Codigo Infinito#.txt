@@ -1,0 +1,88 @@
+#Codigo Infinito#
+import time
+from machine import PWM, Pin
+
+# =================================================================
+# CONFIGURACIÓN DE PINES DEL DRIVER L298N
+# =================================================================
+# Motor 1: Tracción (Trasero)
+pwm_ena = PWM(Pin(2))
+pwm_ena.freq(1000)
+pin_in1 = Pin(3, Pin.OUT)
+pin_in2 = Pin(4, Pin.OUT)
+
+# Motor 2: Dirección (Delantero)
+pwm_enb = PWM(Pin(7))
+pwm_enb.freq(1000)
+pin_in3 = Pin(5, Pin.OUT)
+pin_in4 = Pin(6, Pin.OUT)
+
+# =================================================================
+# VARIABLES DE CALIBRACIÓN
+# =================================================================
+# Potencia de avance (0 a 65535). Usamos ~70% de potencia.
+POTENCIA_AVANCE = int(65535)
+
+# Tiempo estimado en segundos que le toma al carro dar una vuelta completa (360°)
+TIEMPO_CIRCULO = 4.0 
+
+# =================================================================
+# FUNCIONES DE CONTROL MECÁNICO
+# =================================================================
+def frenar():
+    """Apaga la potencia de tracción y alinea la dirección al centro."""
+    pwm_ena.duty_u16(0)
+    pwm_enb.duty_u16(0)
+    pin_in1.value(0)
+    pin_in2.value(0)
+    pin_in3.value(0)
+    pin_in4.value(0)
+
+def ejecutar_infinito():
+    """Ejecuta la trayectoria completa en forma de 8 invertido."""
+    print("\n[INICIO] -> Trazando bucle izquierdo del Infinito...")
+    
+    # --- PRIMER BUCLE: CURVA A LA IZQUIERDA ---
+    # 1. Dirección hacia la Izquierda
+    pwm_enb.duty_u16(65535) # Fuerza total al motor direccional
+    pin_in3.value(1)
+    pin_in4.value(0)
+    # 2. Tracción hacia Adelante
+    pin_in1.value(1)
+    pin_in2.value(0)
+    pwm_ena.duty_u16(POTENCIA_AVANCE)
+    
+    # Mantener el movimiento hasta completar el primer círculo
+    time.sleep(TIEMPO_CIRCULO)
+    
+    print("[CAMBIO] -> Trazando bucle derecho del Infinito...")
+    
+    # --- SEGUNDO BUCLE: CURVA A LA DERECHA ---
+    # 1. Cambiar dirección hacia la Derecha inmediatamente
+    pin_in3.value(0)
+    pin_in4.value(1)
+    # La tracción se mantiene activa hacia adelante
+    
+    # Mantener el movimiento para el círculo opuesto
+    time.sleep(TIEMPO_CIRCULO)
+    
+    # --- FINALIZACIÓN ---
+    frenar()
+    print("[FIN] -> Trayectoria de Infinito completada. Carro detenido.\n")
+
+# =================================================================
+# EJECUCIÓN DEL PROGRAMA
+# =================================================================
+print("=" * 60)
+print("PROGRAMA DE PATRÓN INFINITO COMPILADO")
+print("El carro iniciará la rutina en 3 segundos...")
+print("=" * 60)
+
+# Pausa de seguridad para colocar el carro en el suelo cómodamente
+time.sleep(3)
+
+try:
+    ejecutar_infinito()
+except KeyboardInterrupt:
+    frenar()
+    print("\nRutina cancelada por el usuario.")
