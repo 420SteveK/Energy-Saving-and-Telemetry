@@ -4,7 +4,7 @@ import socket
 from machine import PWM, Pin, ADC
 
 # =================================================================
-# CONFIGURACIÓN DE HARDWARE (Pines según tus códigos previos)
+# CONFIGURACIÓN DE HARDWARE 
 # =================================================================
 # Registro de corrimiento 74LS164 y LDR
 DATA = Pin(14, Pin.OUT)
@@ -29,7 +29,7 @@ MASCARA_TRASERAS = (1 << 1) | (1 << 2)
 MASCARA_IZQ = 1 << 6
 MASCARA_DER = 1 << 3
 
-# Marchas / Velocidades (Escala nativa 0-65535)
+# Marchas / Velocidades 
 VEL_MARCHAS = {
     1: 35000,  # Suave
     2: 45000,  # Media
@@ -43,10 +43,10 @@ VEL_MARCHAS = {
 estado_luces = {"lf": 0, "lb": 0, "ll": 0, "lr": 0, "ldr": 0, "corriendo": True}
 marcha_actual = 1
 leds_registro = 0
-UMBRAL_LUZ = 15000  # Ajustar según la iluminación del laboratorio
+UMBRAL_LUZ = 15000  
 
 # =================================================================
-# GESTIÓN DE LUCES (Hilo secundario)
+# GESTIÓN DE LUCES 
 # =================================================================
 def actualizar_registro():
     global leds_registro
@@ -140,7 +140,7 @@ def conectar_wifi():
     import network
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
-    # CAMBIA ESTOS DATOS POR LOS DE TU RED O CELULAR
+    
     wlan.connect("Steve_kdl", "12345678")
     
     print("Conectando a Wi-Fi...", end="")
