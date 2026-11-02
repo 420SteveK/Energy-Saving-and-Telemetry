@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 # =================================================================
-# CONFIGURACIÓN DE RED (Cambiar por la IP que te dé la Pico W)
+# CONFIGURACIÓN DE RED 
 # =================================================================
 IP_PICO = "172.26.7.164"
 PUERTO = 5000
