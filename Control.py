@@ -1,6 +1,7 @@
 import socket
 import tkinter as tk
 from tkinter import messagebox
+from PIL import Image, ImageTk
 
 # =================================================================
 # CONFIGURACIÓN DE RED
@@ -39,21 +40,115 @@ def enviar_comando(comando):
 
 
 def mostrar_about():
-    messagebox.showinfo(
-        "About - Formula E CES Tec",
-        "Proyecto II: Telemetría y Circuito Decrementador\n"
+    ventana_about = tk.Toplevel(root)
+    ventana_about.title("About - Formula E CES Tec")
+    ventana_about.geometry("460x560")
+    ventana_about.configure(bg="#212121")
+    ventana_about.resizable(False, False)
+
+    ventana_about.transient(root)
+    ventana_about.grab_set()
+
+    # Título
+    tk.Label(
+        ventana_about,
+        text="Proyecto II: Telemetría y Circuito Decrementador",
+        font=("Arial", 11, "bold"),
+        fg="#00E5FF",
+        bg="#212121"
+    ).pack(pady=(15, 5))
+
+    # Información general
+    info_texto = (
         "Institución: Tecnológico de Costa Rica (TEC)\n"
         "Curso: Fundamentos de Sistemas Computacionales\n"
         "Versión: 2.0\n\n"
         "Integrantes:\n"
-        "- Kendall Mena Arias 2025095924\n"
-        "- Julian Arrieta Ibarra 2022116242\n\n"
-        "Guía rápida:\n"
-        "1. Presionar el boton de conexión.\n"
-        "2. Usar controles de dirección/marchas para conducir.\n"
-        "3. En el Panel, activar modo LDR o presionar los bits (000-111) para probar el decrementador."
-        "4. En el Panel, activar modo Luces Automaticas o usarlas manualmente."
+        "• Kendall Mena Arias - 2025095924\n"
+        "• Julian Arrieta Ibarra - 2022116242"
     )
+    tk.Label(
+        ventana_about,
+        text=info_texto,
+        font=("Arial", 10),
+        fg="white",
+        bg="#212121",
+        justify="center"
+    ).pack(pady=5)
+
+    # Contenedor para las dos fotografías
+    frame_fotos = tk.Frame(ventana_about, bg="#212121")
+    frame_fotos.pack(pady=10)
+
+    rutas = [
+        (r"C:\Users\Kendall\Downloads\Yo.jpg", "Kendall Mena"),
+        (r"C:\Users\Kendall\Downloads\Julian.jpg", "Julian Arrieta")
+    ]
+
+    # Guarda la referencia para evitar que Python borre las fotos de memoria
+    ventana_about.imagenes_ref = []
+
+    for col, (ruta, nombre) in enumerate(rutas):
+        frame_persona = tk.Frame(frame_fotos, bg="#212121")
+        frame_persona.grid(row=0, column=col, padx=15)
+
+        try:
+            img = Image.open(ruta)
+            img = img.resize((140, 140), Image.Resampling.LANCZOS)
+            foto = ImageTk.PhotoImage(img)
+            ventana_about.imagenes_ref.append(foto)
+
+            lbl_img = tk.Label(frame_persona, image=foto,
+                               bg="#424242", bd=2, relief="solid")
+            lbl_img.pack()
+        except Exception as e:
+            tk.Label(
+                frame_persona,
+                text="Imagen no\nencontrada",
+                width=18,
+                height=8,
+                bg="#424242",
+                fg="#FF5252",
+                font=("Arial", 8)
+            ).pack()
+            print(f"No se pudo cargar {ruta}: {e}")
+
+        tk.Label(
+            frame_persona,
+            text=nombre,
+            font=("Arial", 9, "bold"),
+            fg="#FFD54F",
+            bg="#212121"
+        ).pack(pady=(5, 0))
+
+    # Guía rápida
+    guia_texto = (
+        "Guía rápida:\n"
+        "1. Presionar el botón de conexión.\n"
+        "2. Usar controles de dirección/marchas para conducir.\n"
+        "3. Activar modo LDR o presionar los bits (000-111) para probar el decrementador.\n"
+        "4. Activar modo Luces Automáticas o usarlas manualmente."
+    )
+    tk.Label(
+        ventana_about,
+        text=guia_texto,
+        font=("Arial", 9),
+        fg="#BDBDBD",
+        bg="#212121",
+        justify="left",
+        wraplength=410
+    ).pack(pady=10, padx=20)
+
+    # Botón para cerrar
+    tk.Button(
+        ventana_about,
+        text="Cerrar",
+        width=15,
+        bg="#0277BD",
+        fg="white",
+        font=("Arial", 9, "bold"),
+        command=ventana_about.destroy
+    ).pack(pady=10)
 
 
 # =================================================================
